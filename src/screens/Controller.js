@@ -13,22 +13,16 @@ import { Constants } from 'expo'
 import {
   Container
 } from '../components/Container'
-const styles = {
-  text: {
-    color: 'black',
-    textTransform: 'uppercase',
-    transform: [{ rotate: '90deg' }]
-  },
-  textContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-}
 
 const WINDOW_HEIGHT = Dimensions.get('window').height
 const LEFT = WINDOW_HEIGHT / 4
 const RIGHT = WINDOW_HEIGHT * 0.5
+const baseControls = require('../../assets/unpress-left-right-button.png')
+const baseFire = require('../../assets/unpress-red-button.png')
+const turningLeft = require('../../assets/press-left-button.png')
+const turningRight = require('../../assets/press-right-button.png')
+const turningSomeWhere = require('../../assets/press-left-right-button.png')
+const firing = require('../../assets/pressed-red-button.png')
 
 class Controller extends React.Component {
   constructor () {
@@ -36,18 +30,11 @@ class Controller extends React.Component {
     this.state = {
       firing: false,
       turningLeft: false,
-      turningRight: true
+      turningRight: false
     }
   }
 
   render () {
-    let baseControls = require('../../assets/unpress-left-right-button.png')
-    let baseFire = require('../../assets/unpress-red-button.png')
-    let turningLeft = require('../../assets/press-left-button.png')
-    let turningRight = require('../../assets/press-right-button.png')
-    let turningSomeWhere = require('../../assets/press-left-right-button.png')
-    let firing = require('../../assets/pressed-red-button.png')
-
     let fireAllWeapons = this.state.firing ? firing : baseFire
 
     let movingAllOverTheWorld
@@ -56,26 +43,25 @@ class Controller extends React.Component {
     else if (this.state.turningRight) movingAllOverTheWorld = turningRight
     else movingAllOverTheWorld = baseControls
 
-
     return (
       <Container>
         <ImageBackground
           source={require('../../assets/scratched-metal.jpg')}
-          style={{width: '100%', height: '100%', flex: 1}}
-          imageStyle={{resizeMode: 'stretch'}}
-          resizeMode="stretch"
+          style={{ width: '100%', height: '100%', flex: 1 }}
+          imageStyle={{ resizeMode: 'stretch' }}
+          resizeMode='stretch'
         >
           <View style={{ flex: 1 }}
             onMoveShouldSetResponder={() => true}
             onResponderRelease={() => this.releaseController()}
             onResponderMove={(evt) => this.moveAndMurder(evt)}
           >
-              <View style={{ flex: 1, flexDirection: 'column' }}>
-                <View style={{ width: '100%', height: '50%' }}>
-                  <Image source={ movingAllOverTheWorld } style={{ width: '100%', height: '100%', transform: [{ rotate: '90deg'}] }}/>
-                </View>
-                <View style={{ width: '100%', height: '50%' }}>
-                  <Image source={ fireAllWeapons } style={{ width: '100%', height: '100%', transform: [{ rotate: '90deg'}] }} />
+            <View style={{ flex: 1, flexDirection: 'column' }}>
+              <View style={{ width: '100%', height: '50%' }}>
+                <Image source={movingAllOverTheWorld} style={{ width: '100%', height: '100%', transform: [{ rotate: '90deg' }] }} />
+              </View>
+              <View style={{ width: '100%', height: '50%' }}>
+                <Image source={fireAllWeapons} style={{ width: '100%', height: '100%', transform: [{ rotate: '90deg' }] }} />
               </View>
             </View>
           </View>
@@ -86,20 +72,26 @@ class Controller extends React.Component {
 
   moveAndMurder ({ nativeEvent }) {
     if (nativeEvent.pageY < LEFT) {
+      if (!this.state.turningLeft) {
+        this.setState({
+          turningLeft: true
+        })
+      }
       this.sendRequest('LEFT')
-      this.setState({
-        turningLeft: true
-      })
     } else if (nativeEvent.pageY > LEFT && nativeEvent.pageY < RIGHT) {
+      if (!this.state.turningRight) {
+        this.setState({
+          turningRight: true
+        })
+      }
       this.sendRequest('RIGHT')
-      this.setState({
-        turningRight: true
-      })
     } else if (nativeEvent.pageY > RIGHT) {
+      if (!this.state.firing) {
+        this.setState({
+          firing: true
+        })
+      }
       this.sendRequest('FIRE')
-      this.setState({
-        firing: true
-      })
     }
   }
 
@@ -118,12 +110,14 @@ class Controller extends React.Component {
       Command: type
     }
 
-    fetch('http://192.168.1.117:6969/test', {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then(resp => console.log(resp))
-      .catch(err => console.error(err))
+    console.log(type)
+
+    // fetch('http://192.168.1.117:6969/test', {
+    //   method: 'POST',
+    //   body: JSON.stringify(body)
+    // })
+    //   .then(resp => console.log(resp))
+    //   .catch(err => console.error(err))
   }
 }
 
