@@ -1,5 +1,7 @@
 import Controller from './Controller'
+import Room from './Room'
 
 export {
-  Controller
+  Controller,
+  Room
 }
