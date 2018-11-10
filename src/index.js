@@ -1,12 +1,14 @@
 import React from 'react'
 import {
-  Controller
+  Controller,
+  Room
 } from './screens'
 
 export default class App extends React.Component {
   render () {
     return (
-      <Controller />
+      <Room />
+      // <Controller />
     )
   }
 }

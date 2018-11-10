@@ -24,13 +24,38 @@ const turningRight = require('../../assets/press-right-button.png')
 const turningSomeWhere = require('../../assets/press-left-right-button.png')
 const firing = require('../../assets/pressed-red-button.png')
 
+const style = {
+  buttonHandler: {
+    width: '100%',
+    height: '100%',
+    transform: [{ rotate: '90deg' }]
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+    flex: 1
+  },
+  imageContainer: {
+    width: '100%',
+    height: '50%'
+  },
+  controllerContainer: {
+    flex: 1,
+    flexDirection: 'column'
+  },
+  rotate: {
+    transform: [{ rotate: '90deg' }],
+  }
+}
+
 class Controller extends React.Component {
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
+
     this.state = {
       firing: false,
       turningLeft: false,
-      turningRight: false
+      turningRight: false,
     }
   }
 
@@ -47,7 +72,7 @@ class Controller extends React.Component {
       <Container>
         <ImageBackground
           source={require('../../assets/scratched-metal.jpg')}
-          style={{ width: '100%', height: '100%', flex: 1 }}
+          style={style.backgroundImage}
           imageStyle={{ resizeMode: 'stretch' }}
           resizeMode='stretch'
         >
@@ -56,12 +81,12 @@ class Controller extends React.Component {
             onResponderRelease={() => this.releaseController()}
             onResponderMove={(evt) => this.moveAndMurder(evt)}
           >
-            <View style={{ flex: 1, flexDirection: 'column' }}>
-              <View style={{ width: '100%', height: '50%' }}>
-                <Image source={movingAllOverTheWorld} style={{ width: '100%', height: '100%', transform: [{ rotate: '90deg' }] }} />
+            <View style={style.controllerContainer}>
+              <View style={style.imageContainer}>
+                <Image source={movingAllOverTheWorld} style={style.buttonHandler} />
               </View>
-              <View style={{ width: '100%', height: '50%' }}>
-                <Image source={fireAllWeapons} style={{ width: '100%', height: '100%', transform: [{ rotate: '90deg' }] }} />
+              <View style={style.imageContainer}>
+                <Image source={fireAllWeapons} style={style.buttonHandler} />
               </View>
             </View>
           </View>
