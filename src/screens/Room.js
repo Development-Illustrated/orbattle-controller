@@ -67,11 +67,14 @@ class Room extends React.Component {
 
       console.log(body)
 
+      console.log(config)
+
       fetch(`${config.baseUrl}/register/client`, {
         method: 'POST',
         body: JSON.stringify(body)
       })
         .then(resp => {
+          console.log(resp)
           this.setState({
             connected: true
           })
@@ -106,8 +109,8 @@ class Room extends React.Component {
                 underlineColorAndroid='transparent'
                 style={style.textInput}
                 onChangeText={(text) => this.setState({ roomCode: text })}
-								value={this.state.roomCode}
-								keyboardType="numeric"
+                value={this.state.roomCode}
+                keyboardType='numeric'
                 placeholder='Enter room code'
               />
               <Button

@@ -25,7 +25,7 @@ const style = {
   buttonHandler: {
     width: '100%',
     height: '100%',
-    transform: [{ scale: 0.85}, { rotate: '90deg' }]
+    transform: [{ scale: 0.85 }, { rotate: '90deg' }]
   },
   backgroundImage: {
     width: '100%',
@@ -34,11 +34,11 @@ const style = {
   },
   imageContainer: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   leftImageContainer: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   controllerContainer: {
     flex: 1,
@@ -49,7 +49,7 @@ const style = {
   },
   turnButtons: {
     width: '100%',
-    height: '100%',
+    height: '100%'
   }
 }
 
@@ -62,6 +62,8 @@ class Controller extends React.Component {
       turningLeft: false,
       turningRight: false
     }
+
+    this.ws = new WebSocket(`${config.socketUrl}`)
   }
 
   render () {
@@ -85,7 +87,7 @@ class Controller extends React.Component {
                     style={{ flex: 0, height: '50%', backgroundColor: 'red' }}
                     onPressIn={() => this.sendRequest('LEFT_START')}
                     onPressOut={() => this.sendRequest('RESET')}>
-                    <Image source={turnLeft} style={style.turnButtons} resizeMode="contain" />
+                    <Image source={turnLeft} style={style.turnButtons} resizeMode='contain' />
                   </TouchableWithoutFeedback>
                 </View>
                 <View style={{ height: '50%', width: '100%', flex: 1 }}>
@@ -93,14 +95,13 @@ class Controller extends React.Component {
                     style={{ flex: 0, height: '50%', backgroundColor: 'red' }}
                     onPressIn={() => this.sendRequest('RIGHT_START')}
                     onPressOut={() => this.sendRequest('RESET')}>
-                    <Image source={turnRight} style={style.turnButtons} resizeMode="contain"  />
+                    <Image source={turnRight} style={style.turnButtons} resizeMode='contain' />
                   </TouchableWithoutFeedback>
                 </View>
               </View>
               <View style={style.imageContainer}>
                 <TouchableWithoutFeedback
-                    onPressIn={() => this.sendRequest('FIRE')}
-                    onPressOut={() => this.sendRequest('RESET')}>
+                  onPressIn={() => this.sendRequest('FIRE')}>
                   <Image source={fireAllWeapons} style={style.buttonHandler} />
                 </TouchableWithoutFeedback>
               </View>
@@ -110,7 +111,6 @@ class Controller extends React.Component {
       </Container>
     )
   }
-
   sendRequest (type) {
     switch (type) {
       case 'LEFT_START':
@@ -137,17 +137,14 @@ class Controller extends React.Component {
         })
         break
     }
+
     let body = {
       ClientId: `${Constants.deviceId}`,
+      RoomId: this.props.room,
       Command: type
     }
 
-    fetch(`${config.baseUrl}/sendAction`, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then(resp => console.log(resp))
-      .catch(err => console.error(err))
+    this.ws.send(JSON.stringify(body))
   }
 }
 
