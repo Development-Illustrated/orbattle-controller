@@ -1,4 +1,5 @@
 import React from 'react'
+import config from '../config'
 
 import {
   TextInput,
@@ -66,7 +67,7 @@ class Room extends React.Component {
 
       console.log(body)
 
-      fetch(`http://ec2-3-8-101-228.eu-west-2.compute.amazonaws.com:6969/register/client`, {
+      fetch(`${config.baseUrl}/register/client`, {
         method: 'POST',
         body: JSON.stringify(body)
       })

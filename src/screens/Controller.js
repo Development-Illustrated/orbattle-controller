@@ -1,4 +1,5 @@
 import React from 'react'
+import config from '../config'
 
 import {
   View,
@@ -145,7 +146,7 @@ class Controller extends React.Component {
       Command: type
     }
 
-    fetch('http://ec2-3-8-101-228.eu-west-2.compute.amazonaws.com:6969/sendAction', {
+    fetch(`${config.baseUrl}/sendAction`, {
       method: 'POST',
       body: JSON.stringify(body)
     })
