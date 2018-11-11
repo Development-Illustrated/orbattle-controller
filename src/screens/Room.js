@@ -106,7 +106,8 @@ class Room extends React.Component {
                 underlineColorAndroid='transparent'
                 style={style.textInput}
                 onChangeText={(text) => this.setState({ roomCode: text })}
-                value={this.state.roomCode}
+								value={this.state.roomCode}
+								keyboardType="numeric"
                 placeholder='Enter room code'
               />
               <Button
