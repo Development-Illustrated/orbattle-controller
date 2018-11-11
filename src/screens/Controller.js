@@ -3,7 +3,6 @@ import config from '../config'
 
 import {
   View,
-  Dimensions,
   ImageBackground,
   Image,
   TouchableWithoutFeedback
@@ -15,7 +14,6 @@ import {
   Container
 } from '../components/Container'
 
-const WINDOW_HEIGHT = Dimensions.get('window').height
 const baseLeft = require('../../assets/unpress-left-button.png')
 const baseRight = require('../../assets/unpress-right-button.png')
 const baseFire = require('../../assets/unpress-red-button.png')
