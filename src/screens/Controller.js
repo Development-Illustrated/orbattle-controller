@@ -3,11 +3,10 @@ import config from '../config'
 
 import {
   View,
-  Text,
   Dimensions,
   ImageBackground,
   Image,
-  TouchableOpacity
+  TouchableWithoutFeedback
 } from 'react-native'
 
 import { Constants } from 'expo'
@@ -17,20 +16,18 @@ import {
 } from '../components/Container'
 
 const WINDOW_HEIGHT = Dimensions.get('window').height
-const LEFT = WINDOW_HEIGHT / 4
-const RIGHT = WINDOW_HEIGHT * 0.5
-const baseControls = require('../../assets/unpress-left-right-button.png')
+const baseLeft = require('../../assets/unpress-left-button.png')
+const baseRight = require('../../assets/unpress-right-button.png')
 const baseFire = require('../../assets/unpress-red-button.png')
-const turningLeft = require('../../assets/press-left-button.png')
-const turningRight = require('../../assets/press-right-button.png')
-const turningSomeWhere = require('../../assets/press-left-right-button.png')
+const turningLeft = require('../../assets/pressed-left-button.png')
+const turningRight = require('../../assets/pressed-right-button.png')
 const firing = require('../../assets/pressed-red-button.png')
 
 const style = {
   buttonHandler: {
     width: '100%',
     height: '100%',
-    transform: [{ rotate: '90deg' }]
+    transform: [{ scale: 0.85}, { rotate: '90deg' }]
   },
   backgroundImage: {
     width: '100%',
@@ -39,7 +36,11 @@ const style = {
   },
   imageContainer: {
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'row',
+  },
+  leftImageContainer: {
+    flex: 1,
+    flexDirection: 'column',
   },
   controllerContainer: {
     flex: 1,
@@ -47,6 +48,10 @@ const style = {
   },
   rotate: {
     transform: [{ rotate: '90deg' }]
+  },
+  turnButtons: {
+    width: '100%',
+    height: '100%',
   }
 }
 
@@ -65,12 +70,8 @@ class Controller extends React.Component {
 
   render () {
     let fireAllWeapons = this.state.firing ? firing : baseFire
-
-    let movingAllOverTheWorld
-    if (this.state.turningLeft && this.state.turningRight) movingAllOverTheWorld = turningSomeWhere
-    else if (this.state.turningLeft) movingAllOverTheWorld = turningLeft
-    else if (this.state.turningRight) movingAllOverTheWorld = turningRight
-    else movingAllOverTheWorld = baseControls
+    let turnLeft = this.state.turningLeft ? turningLeft : baseLeft
+    let turnRight = this.state.turningRight ? turningRight : baseRight
 
     return (
       <Container>
@@ -82,22 +83,30 @@ class Controller extends React.Component {
         >
           <View style={{ flex: 1 }}>
             <View style={style.controllerContainer}>
-              <View style={style.imageContainer}>
-                <TouchableOpacity style={{ flex: 1, backgroundColor: 'red' }}
-                  onPressIn={() => this.sendRequest('LEFT_START')}
-                  onPressOut={() => this.sendRequest('RESET')}>
-                  <Text>Lext</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ flex: 1, backgroundColor: 'blue' }}
-                  onPressIn={() => this.sendRequest('RIGHT_START')}
-                  onPressOut={() => this.sendRequest('RESET')}>
-                  <Text>Lext</Text>
-                </TouchableOpacity>
+              <View style={[style.leftImageContainer]}>
+                <View style={{ height: '50%', width: '100%', flex: 1 }}>
+                  <TouchableWithoutFeedback
+                    style={{ flex: 0, height: '50%', backgroundColor: 'red' }}
+                    onPressIn={() => this.sendRequest('LEFT_START')}
+                    onPressOut={() => this.sendRequest('RESET')}>
+                    <Image source={turnLeft} style={style.turnButtons} resizeMode="contain" />
+                  </TouchableWithoutFeedback>
+                </View>
+                <View style={{ height: '50%', width: '100%', flex: 1 }}>
+                  <TouchableWithoutFeedback
+                    style={{ flex: 0, height: '50%', backgroundColor: 'red' }}
+                    onPressIn={() => this.sendRequest('RIGHT_START')}
+                    onPressOut={() => this.sendRequest('RESET')}>
+                    <Image source={turnRight} style={style.turnButtons} resizeMode="contain"  />
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
               <View style={style.imageContainer}>
-                <TouchableOpacity onPress={() => this.sendRequest('FIRE')}>
+                <TouchableWithoutFeedback
+                    onPressIn={() => this.sendRequest('FIRE')}
+                    onPressOut={() => this.sendRequest('RESET')}>
                   <Image source={fireAllWeapons} style={style.buttonHandler} />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               </View>
             </View>
           </View>
@@ -106,43 +115,32 @@ class Controller extends React.Component {
     )
   }
 
-  moveAndMurder ({ nativeEvent }) {
-    if (nativeEvent.pageY < LEFT) {
-      if (!this.state.turningLeft) {
+  sendRequest (type) {
+    switch (type) {
+      case 'LEFT_START':
         this.setState({
           turningLeft: true
         })
-      }
-      this.sendRequest('LEFT')
-    } else if (nativeEvent.pageY > LEFT && nativeEvent.pageY < RIGHT) {
-      if (!this.state.turningRight) {
+        break
+      case 'RIGHT_START':
         this.setState({
           turningRight: true
         })
-      }
-      this.sendRequest('RIGHT')
-    } else if (nativeEvent.pageY > RIGHT) {
-      if (!this.state.firing) {
+        break
+      case 'FIRE':
         this.setState({
           firing: true
         })
-      }
-      this.sendRequest('FIRE')
+        break
+      case 'RESET':
+      default:
+        this.setState({
+          turningLeft: false,
+          turningRight: false,
+          firing: false
+        })
+        break
     }
-  }
-
-  releaseController () {
-    this.sendRequest('RESET')
-
-    this.setState({
-      turningLeft: false,
-      turningRight: false,
-      firing: false
-    })
-    return true
-  }
-
-  sendRequest (type) {
     let body = {
       ClientId: `${Constants.deviceId}`,
       RoomId: this.props.room,
