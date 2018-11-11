@@ -5,7 +5,8 @@ import {
   Text,
   Dimensions,
   ImageBackground,
-  Image
+  Image,
+  TouchableOpacity
 } from 'react-native'
 
 import { Constants } from 'expo'
@@ -36,15 +37,15 @@ const style = {
     flex: 1
   },
   imageContainer: {
-    width: '100%',
-    height: '50%'
+    flex: 1,
+    flexDirection: 'column'
   },
   controllerContainer: {
     flex: 1,
     flexDirection: 'column'
   },
   rotate: {
-    transform: [{ rotate: '90deg' }],
+    transform: [{ rotate: '90deg' }]
   }
 }
 
@@ -55,7 +56,7 @@ class Controller extends React.Component {
     this.state = {
       firing: false,
       turningLeft: false,
-      turningRight: false,
+      turningRight: false
     }
   }
 
@@ -76,17 +77,24 @@ class Controller extends React.Component {
           imageStyle={{ resizeMode: 'stretch' }}
           resizeMode='stretch'
         >
-          <View style={{ flex: 1 }}
-            onMoveShouldSetResponder={() => true}
-            onResponderRelease={() => this.releaseController()}
-            onResponderMove={(evt) => this.moveAndMurder(evt)}
-          >
+          <View style={{ flex: 1 }}>
             <View style={style.controllerContainer}>
               <View style={style.imageContainer}>
-                <Image source={movingAllOverTheWorld} style={style.buttonHandler} />
+                <TouchableOpacity style={{ flex: 1, backgroundColor: 'red' }}
+                  onPressIn={() => this.sendRequest('LEFT_START')}
+                  onPressOut={() => this.sendRequest('RESET')}>
+                  <Text>Lext</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ flex: 1, backgroundColor: 'blue' }}
+                  onPressIn={() => this.sendRequest('RIGHT_START')}
+                  onPressOut={() => this.sendRequest('RESET')}>
+                  <Text>Lext</Text>
+                </TouchableOpacity>
               </View>
               <View style={style.imageContainer}>
-                <Image source={fireAllWeapons} style={style.buttonHandler} />
+                <TouchableOpacity onPress={() => this.sendRequest('FIRE')}>
+                  <Image source={fireAllWeapons} style={style.buttonHandler} />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -121,6 +129,8 @@ class Controller extends React.Component {
   }
 
   releaseController () {
+    this.sendRequest('RESET')
+
     this.setState({
       turningLeft: false,
       turningRight: false,
@@ -131,18 +141,16 @@ class Controller extends React.Component {
 
   sendRequest (type) {
     let body = {
-      ClientId: `cl-${Constants.deviceId}`,
+      ClientId: `${Constants.deviceId}`,
       Command: type
     }
 
-    console.log(type)
-
-    // fetch('http://192.168.1.117:6969/test', {
-    //   method: 'POST',
-    //   body: JSON.stringify(body)
-    // })
-    //   .then(resp => console.log(resp))
-    //   .catch(err => console.error(err))
+    fetch('http://ec2-3-8-101-228.eu-west-2.compute.amazonaws.com:6969/sendAction', {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+      .then(resp => console.log(resp))
+      .catch(err => console.error(err))
   }
 }
 
