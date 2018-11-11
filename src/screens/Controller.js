@@ -59,6 +59,8 @@ class Controller extends React.Component {
       turningLeft: false,
       turningRight: false
     }
+
+    this.ws = new WebSocket(`${config.socketUrl}`)
   }
 
   render () {
@@ -143,15 +145,11 @@ class Controller extends React.Component {
   sendRequest (type) {
     let body = {
       ClientId: `${Constants.deviceId}`,
+      RoomId: this.props.room,
       Command: type
     }
 
-    fetch(`${config.baseUrl}/sendAction`, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    })
-      .then(resp => console.log(resp))
-      .catch(err => console.error(err))
+    this.ws.send(JSON.stringify(body))
   }
 }
 

@@ -67,6 +67,8 @@ class Room extends React.Component {
 
       console.log(body)
 
+      console.log(config)
+
       fetch(`${config.baseUrl}/register/client`, {
         method: 'POST',
         body: JSON.stringify(body)
